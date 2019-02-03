@@ -22,6 +22,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
     //TODO: Declare instance variables here
     let locationManager = CLLocationManager()
     let weatherDataModel = WeatherDataModel()
+    var showTemperatureInCelcius: Bool = false
 
     
     //Pre-linked IBOutlets
@@ -97,10 +98,19 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
     //Write the updateUIWithWeatherData method here:
     func updateUIWithWeatherData() {
         cityLabel.text = weatherDataModel.city
-        temperatureLabel.text = "\(weatherDataModel.temperature)°"
+        if showTemperatureInCelcius == false {
+            print("Loading in Farenheight \(convertCelciusToFarenheight(celciusTemp: weatherDataModel.temperature))")
+            temperatureLabel.text = "\(convertCelciusToFarenheight(celciusTemp: weatherDataModel.temperature))°F"
+        } else {
+            print("Loading in Celcius")
+            temperatureLabel.text = "\(weatherDataModel.temperature)°C"
+        }
         weatherIcon.image = UIImage(named: weatherDataModel.weatheerIconName)
     }
     
+    func convertCelciusToFarenheight (celciusTemp : Int) -> Int {
+        return Int(celciusTemp * (9/5) + 32)
+    }
     
     
     
@@ -146,8 +156,9 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
     
     
     //Write the userEnteredANewCityName Delegate method here:
-    func userEnteredNewCityName(city: String) {
+    func userEnteredNewCityName(city: String, changeToCelcius: Bool) {
         let params : [String : String] = ["q":city, "appid": APP_ID]
+        showTemperatureInCelcius = changeToCelcius
         getWeatherData(url: WEATHER_URL, parameters: params)
     }
 
